@@ -11,11 +11,10 @@
 **Event:** AI in Education Hackathon 2025  
 **Theme:** AI-Powered Educational Innovation  
 **Team:** FlowLearn Innovators  
-**Submission Date:** October 11, 2025
 
 ## 📺 Demo Video
 
-[Watch our 4-minute demo video →](https://youtube.com/demo-link)
+[Watch my demo video →](https://youtube.com/demo-link)
 
 ## 🚀 Quick Start
 
