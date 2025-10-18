@@ -198,12 +198,6 @@ Try these topics to see FlowLearn AI in action:
 - "TCP three-way handshake"
 - "How blockchain consensus works"
 
-## 🤝 Team Members
-
-- **Lead Developer** - [Your Name]
-- **UI/UX Designer** - [Team Member]
-- **AI Integration** - [Team Member]
-- **Documentation** - [Team Member]
 
 ## 📈 Future Enhancements
 
@@ -224,9 +218,6 @@ Try these topics to see FlowLearn AI in action:
 4. **Scalability:** Works for any topic, any complexity level
 5. **Accessibility:** Multiple formats ensure no learner is left behind
 
-## 📄 License
-
-MIT License - See [LICENSE](LICENSE) file for details
 
 ## 🙏 Acknowledgments
 
@@ -234,13 +225,6 @@ MIT License - See [LICENSE](LICENSE) file for details
 - GitHub for Models API access
 - Mermaid.js for flowchart rendering
 - The open-source community
-
-## 📞 Contact
-
-- **GitHub:** [github.com/yourusername/flowlearn-ai](https://github.com/yourusername/flowlearn-ai)
-- **Email:** team@flowlearn-ai.com
-- **Demo:** [flowlearn-ai.demo](https://flowlearn-ai.demo)
-- **DevPost:** [devpost.com/software/flowlearn-ai](https://devpost.com/software/flowlearn-ai)
 
 ---
 
