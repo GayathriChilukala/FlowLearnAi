@@ -12,6 +12,9 @@
 **Theme:** AI-Powered Educational Innovation  
 **Team:** FlowLearn Innovators  
 
+## ➡️ Try Application Here
+[Click Here →](https://teal-sprite-6bf04f.netlify.app/)
+
 ## 📺 Demo Video
 
 [Watch my demo video →](https://youtube.com/demo-link)
