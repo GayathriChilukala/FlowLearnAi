@@ -1,5 +1,5 @@
 // API Configuration
-const GITHUB_TOKEN = "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";
+const GITHUB_TOKEN = "YOUR_TOKEN";
 const ENDPOINT = "https://models.inference.ai.azure.com/chat/completions";
 const MODEL = "gpt-4o";
 
