@@ -1,0 +1,183 @@
+/* Main Styles for FlowLearn AI */
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pulse-slow {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.pointer {
+    position: absolute;
+    font-size: 40px;
+    z-index: 100;
+    animation: bounce 0.5s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes bounce {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(-10px);
+    }
+}
+
+.highlight-ring {
+    position: absolute;
+    border: 4px solid #8b5cf6;
+    border-radius: 10px;
+    z-index: 99;
+    pointer-events: none;
+    animation: pulse-ring 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+    0% {
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 20px rgba(139, 92, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+    }
+}
+
+.diagram-container {
+    position: relative;
+    overflow-x: auto;
+}
+
+.mermaid {
+    min-height: 400px;
+}
+
+.complexity-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.complexity-simple {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.complexity-detailed {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.complexity-advanced {
+    background: #fce7f3;
+    color: #9f1239;
+}
+
+.sub-step-indicator {
+    background: #f3e8ff;
+    padding: 4px 12px;
+    border-radius: 8px;
+    color: #6b21a8;
+    font-weight: 600;
+}
+
+/* Teacher Character Styles */
+.teacher-character {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.teacher-avatar {
+    font-size: 64px;
+    animation: float 3s ease-in-out infinite;
+    cursor: pointer;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.teacher-avatar.talking {
+    animation: talk 0.3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes talk {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.teacher-speech-bubble {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 20px;
+    max-width: 350px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    position: relative;
+    margin-bottom: 10px;
+    border: 2px solid #8b5cf6;
+}
+
+.teacher-speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: 30px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+}
+
+.teacher-speech-bubble.typing {
+    border-color: #22c55e;
+}
+
+#teacherText {
+    color: #1f2937;
+    font-size: 15px;
+    line-height: 1.5;
+    display: block;
+}
