@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowLearn AI - Advanced Visual Learning</title>
+    
+    <!-- Preload download libraries for faster access -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" as="script">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" as="script">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .pulse-slow { animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .pointer {
+            position: absolute;
+            font-size: 24px;
+            z-index: 100;
+            animation: bounce 0.5s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+        
+        .highlight-ring {
+            position: absolute;
+            border: 4px solid #8b5cf6;
+            border-radius: 10px;
+            z-index: 99;
+            pointer-events: none;
+            animation: pulse-ring 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(139, 92, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+        }
+        
+        .diagram-container { position: relative; overflow-x: auto; }
+        .mermaid { min-height: 400px; }
+        
+        .complexity-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .complexity-simple { background: #dcfce7; color: #166534; }
+        .complexity-detailed { background: #dbeafe; color: #1e40af; }
+        .complexity-advanced { background: #fce7f3; color: #9f1239; }
+        
+        .sub-step-indicator {
+            background: #f3e8ff;
+            padding: 4px 12px;
+            border-radius: 8px;
+            color: #6b21a8;
+            font-weight: 600;
+        }
+
+        /* Teacher Character Styles */
+        .teacher-character {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .teacher-avatar {
+            font-size: 64px;
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        .teacher-avatar.talking {
+            animation: talk 0.3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes talk {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .teacher-speech-bubble {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 20px;
+            max-width: 350px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            margin-bottom: 10px;
+            border: 2px solid #8b5cf6;
+        }
+
+        .teacher-speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 30px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid white;
+        }
+
+        .teacher-speech-bubble.typing {
+            border-color: #22c55e;
+        }
+
+        #teacherText {
+            color: #1f2937;
+            font-size: 15px;
+            line-height: 1.5;
+            display: block;
+        }
+    </style>
+    
+    <!-- Load download libraries directly -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- IMPROVED: Load DOCX library using ES6 modules with better CDN -->
+    <script type="importmap">
+    {
+      "imports": {
+        "docx": "https://esm.sh/docx@8.5.0"
+      }
+    }
+    </script>
+    
+    <script type="module">
+        // Load docx as a module and expose it globally
+        try {
+            const docxModule = await import('docx');
+            window.docx = docxModule;
+            
+            
+            // Dispatch event to notify the library is ready
+            window.dispatchEvent(new Event('docxLoaded'));
+        } catch (error) {
+           
+            window.docxLoadFailed = true;
+        }
+    </script>
+    
+    <script>
+        // Check library loading status
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const statusDiv = document.createElement();
+                statusDiv.id = 'libraryStatus';
+                statusDiv.style.cssText = 'position: fixed; top: 10px; right: 10px; background: white; padding: 10px 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10000; font-size: 12px; max-width: 250px;';
+                
+                let status = '';
+                let color = '';
+                
+                if (typeof docx !== 'undefined') {
+                    status = '✅ All Libraries Ready';
+                    color = '#10b981';
+                    setTimeout(() => statusDiv.remove(), 5000);
+                } else if (window.docxLoadFailed) {
+                    status = '❌ DOCX Failed to Load';
+                    color = '#ef4444';
+                } else {
+                    status = '⏳ Loading Libraries...';
+                    color = '#f59e0b';
+                    
+                    // Wait for docx to load
+                    window.addEventListener('docxLoaded', function() {
+                        if (statusDiv.parentNode) {
+                            statusDiv.innerHTML = ``;
+                            setTimeout(() => statusDiv.remove(), 3000);
+                        }
+                    });
+                }
+                
+                statusDiv.innerHTML = `<strong style="color: ${color};">${status}</strong>`;
+                document.body.appendChild(statusDiv);
+                
+                
+            }, 2000);
+        });
+    </script>
+</head>
+<body class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 min-h-screen">
+
+    <!-- STEP 1: Topic Input -->
+    <div id="step1" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-2xl w-full">
+            <div class="text-center mb-8 fade-in">
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-4">
+                    FlowLearn AI 🎯
+                </h1>
+                <p class="text-xl md:text-2xl text-white/90">
+                    Advanced visual learning with sub-steps & branches
+                </p>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-2xl p-8 fade-in">
+                <label class="block text-gray-700 text-lg font-semibold mb-3">
+                    What process do you want to understand?
+                </label>
+                <input 
+                    type="text" 
+                    id="topicInput"
+                    placeholder="e.g., How OAuth 2.0 works, Cellular respiration, How compiler works..."
+                    class="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none mb-6"
+                    onkeypress="if(event.key==='Enter') goToLevelSelection()"
+                />
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                    <button onclick="setTopic('How OAuth 2.0 authentication works')" class="bg-blue-100 hover:bg-blue-200 px-4 py-3 rounded-lg text-blue-800 font-medium transition text-sm">
+                        🔐 OAuth 2.0
+                    </button>
+                    <button onclick="setTopic('How a compiler works')" class="bg-purple-100 hover:bg-purple-200 px-4 py-3 rounded-lg text-purple-800 font-medium transition text-sm">
+                        💻 Compiler
+                    </button>
+                    <button onclick="setTopic('Cellular respiration process')" class="bg-green-100 hover:bg-green-200 px-4 py-3 rounded-lg text-green-800 font-medium transition text-sm">
+                        🧬 Cell Respiration
+                    </button>
+                    <button onclick="setTopic('How DNS resolution works')" class="bg-cyan-100 hover:bg-cyan-200 px-4 py-3 rounded-lg text-cyan-800 font-medium transition text-sm">
+                        🌐 DNS
+                    </button>
+                    <button onclick="setTopic('Git merge vs rebase')" class="bg-orange-100 hover:bg-orange-200 px-4 py-3 rounded-lg text-orange-800 font-medium transition text-sm">
+                        🔀 Git
+                    </button>
+                    <button onclick="setTopic('TCP 3-way handshake')" class="bg-pink-100 hover:bg-pink-200 px-4 py-3 rounded-lg text-pink-800 font-medium transition text-sm">
+                        🤝 TCP
+                    </button>
+                </div>
+
+                <button 
+                    onclick="goToLevelSelection()" 
+                    class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-bold py-4 rounded-xl hover:from-purple-700 hover:to-pink-700 transition shadow-lg"
+                >
+                    Continue →
+                </button>
+            </div>
+
+            <div class="mt-6 text-center text-white/80 text-sm">
+                <p>💡 Best for technical processes, scientific concepts, and algorithms</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: Complexity Level Selection -->
+    <div id="step2" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-4xl w-full">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-3">
+                    Choose Your Complexity Level 🎚️
+                </h2>
+                <p class="text-xl text-white/90" id="selectedTopic">Topic: ...</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Simple -->
+                <div class="bg-white rounded-2xl p-8 shadow-2xl hover:scale-105 transition-all cursor-pointer" onclick="selectLevel('simple')">
+                    <div class="text-6xl mb-4 text-center">🌟</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3 text-center">Simple</h3>
+                    <p class="text-gray-600 mb-4">
+                        • 5-7 main steps<br>
+                        • Basic overview<br>
+                        • Quick to understand<br>
+                        • Perfect for beginners
+                    </p>
+                    <div class="bg-green-100 text-green-800 px-4 py-2 rounded-lg text-center font-semibold">
+                        ~3 min tour
+                    </div>
+                </div>
+
+                <!-- Detailed -->
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-8 shadow-2xl hover:scale-105 transition-all cursor-pointer border-4 border-yellow-400" onclick="selectLevel('detailed')">
+                    <div class="text-6xl mb-4 text-center">🎓</div>
+                    <h3 class="text-2xl font-bold text-white mb-3 text-center">Detailed ⭐</h3>
+                    <p class="text-white/90 mb-4">
+                        • 8-12 steps with sub-steps<br>
+                        • Deeper explanations<br>
+                        • Shows decision points<br>
+                        • Recommended for learning
+                    </p>
+                    <div class="bg-white text-blue-800 px-4 py-2 rounded-lg text-center font-semibold">
+                        ~5 min tour
+                    </div>
+                </div>
+
+                <!-- Advanced -->
+                <div class="bg-white rounded-2xl p-8 shadow-2xl hover:scale-105 transition-all cursor-pointer" onclick="selectLevel('advanced')">
+                    <div class="text-6xl mb-4 text-center">🔬</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-3 text-center">Advanced</h3>
+                    <p class="text-gray-600 mb-4">
+                        • 12+ steps with sub-steps<br>
+                        • Technical details<br>
+                        • Loops & edge cases<br>
+                        • For deep understanding
+                    </p>
+                    <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-lg text-center font-semibold">
+                        ~8 min tour
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <button onclick="goBackToTopic()" class="text-white text-lg hover:underline">
+                    ← Change Topic
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="text-center">
+            <div class="text-8xl mb-6 pulse-slow">🎨</div>
+            <h2 class="text-4xl font-bold text-white mb-4">Creating your flowchart...</h2>
+            <p id="loadingText" class="text-xl text-white/90 mb-6">Analyzing the process...</p>
+            <div class="w-80 bg-white/30 rounded-full h-3 mx-auto">
+                <div id="progressBar" class="bg-white h-3 rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+            <p class="text-white/70 mt-4">This may take 15-20 seconds for complex diagrams</p>
+        </div>
+    </div>
+
+    <!-- FLOWCHART VIEWER -->
+    <div id="viewer" class="hidden min-h-screen p-4 md:p-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-t-3xl p-6 shadow-lg">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <h2 id="flowchartTitle" class="text-3xl font-bold text-gray-800">Your Flowchart</h2>
+                        <p class="text-gray-600 mt-1">
+                            <span id="complexityBadge"></span>
+                            <span class="ml-2">Watch and listen to the guided tour</span>
+                        </p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="downloadFlowchart()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition">
+                            ⬇️ Download
+                        </button>
+                        <button onclick="goHome()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold transition">
+                            ← New Topic
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flowchart -->
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 p-8 shadow-lg">
+                <div class="diagram-container bg-white rounded-2xl p-8 shadow-inner relative" id="diagramContainer">
+                    <div class="highlight-ring" id="highlightRing" style="display: none;"></div>
+                    <div class="pointer" id="pointer" style="display: none;">👉</div>
+                    <div class="mermaid text-center" id="mermaidDiagram"></div>
+                </div>
+            </div>
+
+            <!-- Teacher Character -->
+            <div class="teacher-character" id="teacherCharacter" style="display: none;">
+                <div class="teacher-speech-bubble hidden" id="teacherBubble">
+                    <span id="teacherText">Ready to learn!</span>
+                </div>
+                <div class="teacher-avatar" id="teacherAvatar">👨‍🏫</div>
+            </div>
+
+            <!-- Current Explanation -->
+            <div class="bg-white p-6 shadow-lg">
+                <div class="flex items-start gap-4">
+                    <div class="text-4xl">💬</div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Current Step:</h3>
+                        <p id="currentStep" class="text-xl text-gray-700 leading-relaxed">
+                            Click "Start Tour" to begin the guided explanation!
+                        </p>
+                        <div id="subStepsContainer" class="mt-4 hidden">
+                            <div class="bg-purple-50 rounded-lg p-4 border-l-4 border-purple-500">
+                                <p class="font-semibold text-purple-900 mb-2">📋 Sub-steps:</p>
+                                <ul id="subStepsList" class="list-disc list-inside text-gray-700 space-y-1"></ul>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center gap-4 text-sm text-gray-500">
+                            <span id="progressInfo">Step 0 of 0</span>
+                            <span id="subStepInfo" class="hidden sub-step-indicator">Sub-step 0 of 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="bg-white rounded-b-3xl p-6 shadow-lg">
+                <div class="flex flex-wrap items-center justify-center gap-4 mb-4">
+                    <button id="startBtn" onclick="startTour()" class="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-xl text-xl font-bold transition shadow-lg">
+                        ▶️ Start Tour
+                    </button>
+                    <button id="pauseBtn" onclick="pauseTour()" class="hidden bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-4 rounded-xl text-xl font-bold transition shadow-lg">
+                        ⏸️ Pause
+                    </button>
+                    <button onclick="stopTour()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-4 rounded-xl text-xl font-bold transition">
+                        ⏹️ Stop
+                    </button>
+                    <button onclick="restartTour()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-4 rounded-xl text-xl font-bold transition">
+                        🔄 Restart
+                    </button>
+                    <button onclick="skipToNext()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-4 rounded-xl text-lg font-bold transition">
+                        ⏭️ Skip
+                    </button>
+                </div>
+                
+                <div class="flex flex-wrap items-center justify-center gap-4">
+                    <select id="speedSelect" class="px-6 py-3 rounded-xl border-2 border-gray-300 text-lg font-semibold">
+                        <option value="0.75">Slow (0.75x)</option>
+                        <option value="1" selected>Normal (1x)</option>
+                        <option value="1.25">Fast (1.25x)</option>
+                        <option value="1.5">Faster (1.5x)</option>
+                    </select>
+                    
+                    <label class="flex items-center gap-2 px-4 py-3 bg-gray-100 rounded-xl">
+                        <input type="checkbox" id="autoAdvanceCheck" checked class="w-5 h-5">
+                        <span class="font-semibold text-gray-700">Auto-advance</span>
+                    </label>
+                </div>
+
+                <p class="text-center text-gray-600 mt-4">
+                    🎧 Headphones recommended | 🖱️ Watch the animated pointer
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript files -->
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/flowchart.js"></script>
+    <script src="js/tour.js"></script>
+    <script src="js/utils.js"></script>
+    
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: false,
+            theme: 'default',
+            flowchart: { 
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        // Load voices on page load
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                const voices = window.speechSynthesis.getVoices();
+              
+            };
+        }
+
+        // Prevent accidental page refresh during tour
+        window.addEventListener('beforeunload', (e) => {
+            if (isPlaying) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
