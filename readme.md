@@ -13,7 +13,7 @@
 **Team:** FlowLearn Innovators  
 
 ## ➡️ Try Application Here
-[Click Here →](https://teal-sprite-6bf04f.netlify.app/)(sincerely apologize if the current live version of our application is missing certain functionality or is inaccessible. This was caused by an unexpected external downtime with a Microsoft endpoint that we were relying on for our flow chart generation feature.
+[Click Here →](https://teal-sprite-6bf04f.netlify.app/)
 
 The Problem: An external Microsoft service outage made the necessary API inaccessible.)
 
